@@ -58,11 +58,15 @@ WORKDIR /var/www/html
 # Copy composer files
 COPY composer*.json ./
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+# Install PHP dependencies (skip scripts until app files are present)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist --no-scripts
 
 # Copy application files
 COPY . .
+
+# Now that app files are present, finalize Composer autoload and discovery
+RUN composer dump-autoload -o \
+    && php artisan package:discover --ansi || true
 
 # Copy built assets from node-builder stage
 COPY --from=node-builder /app/public/build ./public/build
