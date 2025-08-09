@@ -9,8 +9,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install Node.js dependencies
-RUN npm ci --only=production --no-audit --no-fund
+# Install Node.js dependencies (include dev deps for Vite build)
+RUN npm ci --no-audit --no-fund
 
 # Copy source files needed for build
 COPY . .
